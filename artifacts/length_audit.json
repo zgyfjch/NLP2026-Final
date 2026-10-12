@@ -1,0 +1,41 @@
+{
+  "wordpiece_includes_special_tokens": true,
+  "nyt_wordpiece_by_split": {
+    "train": {
+      "n": 9215,
+      "mean": 836.6782419967444,
+      "median": 875.0,
+      "p95": 1327.0,
+      "fraction_over_64": 0.9996744438415627
+    },
+    "val": {
+      "n": 1152,
+      "mean": 837.9626736111111,
+      "median": 872.0,
+      "p95": 1312.0,
+      "fraction_over_64": 0.9982638888888888
+    },
+    "test": {
+      "n": 1152,
+      "mean": 818.7890625,
+      "median": 846.5,
+      "p95": 1347.3500000000001,
+      "fraction_over_64": 1.0
+    }
+  },
+  "nyt_regex": {
+    "n": 11519,
+    "mean": 639.9447000607692,
+    "median": 676.0,
+    "p95": 1018.0,
+    "fraction_over_64": 0.9975692334404028
+  },
+  "ag_regex": {
+    "n": 90000,
+    "mean": 38.18615555555556,
+    "median": 37.0,
+    "p95": 55.0,
+    "fraction_over_64": 0.021622222222222223
+  },
+  "conflicting_exact_text_labels": 0
+}

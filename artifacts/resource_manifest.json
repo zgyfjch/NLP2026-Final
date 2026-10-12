@@ -1,0 +1,22 @@
+{
+  "HW-1/nyt.csv": {
+    "bytes": 43401361,
+    "sha256": "de12ebe7f41316b798896bf975da840e2998f82393328d375fe5456a14e9eb2d"
+  },
+  "HW-1/ag.csv": {
+    "bytes": 21756712,
+    "sha256": "06fa7de72a2f1cb41513c35260964518d029ff63ae631a807d3b189fbf246c4b"
+  },
+  "cache/glove.6B.100d.txt": {
+    "bytes": 347116733,
+    "sha256": "95dde4dfd627ab26608d33e76d1195ec059734bd29089ea52cadb08d07c64544"
+  },
+  "cache/bert-base-uncased/model.safetensors": {
+    "bytes": 440449768,
+    "sha256": "68d45e234eb4a928074dfd868cead0219ab85354cc53d20e772753c6bb9169d3"
+  },
+  "reports/acl.sty": {
+    "bytes": 11927,
+    "sha256": "7def961ac900a2bbcc091da0ee71796b277e6d14a707c9eed52b76ef5d25ae2a"
+  }
+}

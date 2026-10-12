@@ -1,0 +1,34 @@
+{
+  "total": 11519,
+  "counts": {
+    "sports": 8639,
+    "politics": 1451,
+    "business": 1429
+  },
+  "duplicates": 72,
+  "split_counts": {
+    "train": {
+      "sports": 6924,
+      "business": 1157,
+      "politics": 1134
+    },
+    "val": {
+      "sports": 876,
+      "politics": 152,
+      "business": 124
+    },
+    "test": {
+      "sports": 839,
+      "politics": 165,
+      "business": 148
+    }
+  },
+  "test_rows_seen_in_train": 8,
+  "val_rows_seen_in_train": 12,
+  "ag_documents": 90000,
+  "ag_exact_overlap_by_split": {
+    "train": 0,
+    "val": 0,
+    "test": 0
+  }
+}
