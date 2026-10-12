@@ -1,0 +1,380 @@
+{
+  "majority_baseline": {
+    "label": "sports",
+    "accuracy": 0.7282986111111112,
+    "macro_f1": 0.2809308555164909,
+    "per_class": {
+      "business": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 148.0
+      },
+      "politics": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 165.0
+      },
+      "sports": {
+        "precision": 0.7282986111111112,
+        "recall": 1.0,
+        "f1-score": 0.8427925665494727,
+        "support": 839.0
+      },
+      "accuracy": 0.7282986111111112,
+      "macro avg": {
+        "precision": 0.24276620370370372,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.2809308555164909,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.5304188669463735,
+        "recall": 0.7282986111111112,
+        "f1-score": 0.6138046556727496,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        0,
+        0,
+        148
+      ],
+      [
+        0,
+        0,
+        165
+      ],
+      [
+        0,
+        0,
+        839
+      ]
+    ]
+  },
+  "temperature": 0.3387489151131787,
+  "selected_threshold": 0.9526381909547739,
+  "calibration_n": 576,
+  "threshold_selection_n": 576,
+  "calibration": {
+    "raw_nll": 0.034690245013414715,
+    "scaled_nll": 0.026512423034191792,
+    "raw_ece": 0.016651808011764517,
+    "scaled_ece": 0.004784209395232386
+  },
+  "selective_curve": [
+    {
+      "threshold": 0.0,
+      "coverage": 1.0,
+      "accepted": 1152,
+      "accuracy": 0.9913194444444444
+    },
+    {
+      "threshold": 0.5,
+      "coverage": 1.0,
+      "accepted": 1152,
+      "accuracy": 0.9913194444444444
+    },
+    {
+      "threshold": 0.7,
+      "coverage": 0.9921875,
+      "accepted": 1143,
+      "accuracy": 0.994750656167979
+    },
+    {
+      "threshold": 0.8,
+      "coverage": 0.9913194444444444,
+      "accepted": 1142,
+      "accuracy": 0.9947460595446584
+    },
+    {
+      "threshold": 0.9,
+      "coverage": 0.9878472222222222,
+      "accepted": 1138,
+      "accuracy": 0.9964850615114236
+    },
+    {
+      "threshold": 0.95,
+      "coverage": 0.984375,
+      "accepted": 1134,
+      "accuracy": 0.9973544973544973
+    },
+    {
+      "threshold": 0.99,
+      "coverage": 0.9678819444444444,
+      "accepted": 1115,
+      "accuracy": 0.9973094170403587
+    },
+    {
+      "threshold": 0.9526381909547739,
+      "coverage": 0.984375,
+      "accepted": 1134,
+      "accuracy": 0.9973544973544973
+    }
+  ],
+  "unseen_test": {
+    "accuracy": 0.9912587412587412,
+    "macro_f1": 0.979956895467016,
+    "per_class": {
+      "business": {
+        "precision": 0.9928057553956835,
+        "recall": 0.9452054794520548,
+        "f1-score": 0.968421052631579,
+        "support": 146.0
+      },
+      "politics": {
+        "precision": 0.9580838323353293,
+        "recall": 0.9876543209876543,
+        "f1-score": 0.9726443768996961,
+        "support": 162.0
+      },
+      "sports": {
+        "precision": 0.9976133651551312,
+        "recall": 1.0,
+        "f1-score": 0.998805256869773,
+        "support": 836.0
+      },
+      "accuracy": 0.9912587412587412,
+      "macro avg": {
+        "precision": 0.9828343176287148,
+        "recall": 0.977619933479903,
+        "f1-score": 0.979956895467016,
+        "support": 1144.0
+      },
+      "weighted avg": {
+        "precision": 0.9914020930033068,
+        "recall": 0.9912587412587412,
+        "f1-score": 0.991222952347108,
+        "support": 1144.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        138,
+        7,
+        1
+      ],
+      [
+        1,
+        160,
+        1
+      ],
+      [
+        0,
+        0,
+        836
+      ]
+    ]
+  },
+  "head64": {
+    "accuracy": 0.9166666666666666,
+    "macro_f1": 0.8526603141900594,
+    "per_class": {
+      "business": {
+        "precision": 0.952755905511811,
+        "recall": 0.8175675675675675,
+        "f1-score": 0.88,
+        "support": 148.0
+      },
+      "politics": {
+        "precision": 0.9696969696969697,
+        "recall": 0.5818181818181818,
+        "f1-score": 0.7272727272727273,
+        "support": 165.0
+      },
+      "sports": {
+        "precision": 0.906047516198704,
+        "recall": 1.0,
+        "f1-score": 0.9507082152974504,
+        "support": 839.0
+      },
+      "accuracy": 0.9166666666666666,
+      "macro avg": {
+        "precision": 0.942833463802495,
+        "recall": 0.7997952497952499,
+        "f1-score": 0.8526603141900594,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.9211647049535251,
+        "recall": 0.9166666666666666,
+        "f1-score": 0.9096216949952785,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        121,
+        3,
+        24
+      ],
+      [
+        6,
+        96,
+        63
+      ],
+      [
+        0,
+        0,
+        839
+      ]
+    ]
+  },
+  "explanation": {
+    "n": 200,
+    "top5_flip_rate": 0.07,
+    "random5_flip_rate": 0.0,
+    "max_reconstruction_error": 7.105427357601002e-15,
+    "examples": [
+      {
+        "row_id": 1205,
+        "truth": "sports",
+        "prediction": "sports",
+        "runner_up": "politics",
+        "terms": [
+          {
+            "term": "his",
+            "contribution": 0.5542100379480526
+          },
+          {
+            "term": "open",
+            "contribution": 0.390603018928081
+          },
+          {
+            "term": "with",
+            "contribution": 0.21393386566997358
+          },
+          {
+            "term": "he",
+            "contribution": 0.2049483407549544
+          },
+          {
+            "term": "at",
+            "contribution": 0.1923479210662724
+          }
+        ]
+      },
+      {
+        "row_id": 4971,
+        "truth": "sports",
+        "prediction": "sports",
+        "runner_up": "politics",
+        "terms": [
+          {
+            "term": "season",
+            "contribution": 0.43177240300204583
+          },
+          {
+            "term": "his",
+            "contribution": 0.3738887462008125
+          },
+          {
+            "term": "game",
+            "contribution": 0.27268856212173037
+          },
+          {
+            "term": "indians",
+            "contribution": 0.2652144715491394
+          },
+          {
+            "term": "team",
+            "contribution": 0.22651524894695815
+          }
+        ]
+      },
+      {
+        "row_id": 11207,
+        "truth": "sports",
+        "prediction": "sports",
+        "runner_up": "politics",
+        "terms": [
+          {
+            "term": "game",
+            "contribution": 0.5157019478980076
+          },
+          {
+            "term": "play",
+            "contribution": 0.28257996835208643
+          },
+          {
+            "term": "his",
+            "contribution": 0.2618849126211562
+          },
+          {
+            "term": "a",
+            "contribution": 0.12941576186919748
+          },
+          {
+            "term": "first",
+            "contribution": 0.12787792949928503
+          }
+        ]
+      },
+      {
+        "row_id": 6783,
+        "truth": "business",
+        "prediction": "business",
+        "runner_up": "politics",
+        "terms": [
+          {
+            "term": "regulators",
+            "contribution": 0.6215003639126229
+          },
+          {
+            "term": "housing",
+            "contribution": 0.39431213229656314
+          },
+          {
+            "term": "consumer",
+            "contribution": 0.3635645825850289
+          },
+          {
+            "term": "mortgages",
+            "contribution": 0.3309273415826579
+          },
+          {
+            "term": "loans",
+            "contribution": 0.21775441703506937
+          }
+        ]
+      },
+      {
+        "row_id": 3600,
+        "truth": "business",
+        "prediction": "business",
+        "runner_up": "politics",
+        "terms": [
+          {
+            "term": "percent",
+            "contribution": 0.510025443856173
+          },
+          {
+            "term": "goods",
+            "contribution": 0.4945958981488016
+          },
+          {
+            "term": "orders",
+            "contribution": 0.23834544189444176
+          },
+          {
+            "term": "economic",
+            "contribution": 0.23204937423815195
+          },
+          {
+            "term": "month",
+            "contribution": 0.22727447319700006
+          }
+        ]
+      }
+    ],
+    "protocol": "Zero up to five positive TF-IDF feature contributions without renormalization; fixed 200 test rows."
+  },
+  "latency_ms": {
+    "n": 100,
+    "median": 2.7961500004494155,
+    "p95": 3.591170000527199,
+    "scope": "TF-IDF transform + predict_proba, one document, CPU; HTTP excluded"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "checks": [
+    {
+      "method": "binary",
+      "status": "verified",
+      "test_samples": 1152
+    },
+    {
+      "method": "frequency",
+      "status": "verified",
+      "test_samples": 1152
+    },
+    {
+      "method": "tfidf",
+      "status": "verified",
+      "test_samples": 1152
+    },
+    {
+      "method": "glove",
+      "status": "verified",
+      "test_samples": 1152
+    },
+    {
+      "method": "w2v_ag",
+      "status": "verified",
+      "test_samples": 1152
+    },
+    {
+      "method": "w2v_nyt",
+      "status": "verified",
+      "test_samples": 1152
+    },
+    {
+      "method": "bert",
+      "status": "verified",
+      "test_samples": 1152
+    }
+  ],
+  "all_complete": true,
+  "calibration_disjoint": true,
+  "acl_style_unmodified": true
+}

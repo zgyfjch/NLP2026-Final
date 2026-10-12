@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+cache/
+artifacts/models/*
+!artifacts/models/binary.joblib
+!artifacts/models/frequency.joblib
+!artifacts/models/tfidf.joblib
+!artifacts/models/calibration.json
+tmp/
+submission/
+third_party/
+*.log
+*.aux
+*.out
+*.synctex.gz
+.DS_Store
+自然语言处理作业提交*

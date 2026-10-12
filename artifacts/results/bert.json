@@ -1,0 +1,141 @@
+{
+  "method": "bert",
+  "labels": [
+    "business",
+    "politics",
+    "sports"
+  ],
+  "validation": {
+    "accuracy": 0.9765625,
+    "macro_f1": 0.9411223709343851,
+    "per_class": {
+      "business": {
+        "precision": 0.8837209302325582,
+        "recall": 0.9193548387096774,
+        "f1-score": 0.9011857707509882,
+        "support": 124.0
+      },
+      "politics": {
+        "precision": 0.9452054794520548,
+        "recall": 0.9078947368421053,
+        "f1-score": 0.9261744966442953,
+        "support": 152.0
+      },
+      "sports": {
+        "precision": 0.9954389965792474,
+        "recall": 0.9965753424657534,
+        "f1-score": 0.9960068454078722,
+        "support": 876.0
+      },
+      "accuracy": 0.9765625,
+      "macro avg": {
+        "precision": 0.9414551354212867,
+        "recall": 0.9412749726725121,
+        "f1-score": 0.9411223709343851,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.9767857545390366,
+        "recall": 0.9765625,
+        "f1-score": 0.976586419826694,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        114,
+        7,
+        3
+      ],
+      [
+        13,
+        138,
+        1
+      ],
+      [
+        2,
+        1,
+        873
+      ]
+    ]
+  },
+  "test": {
+    "accuracy": 0.9748263888888888,
+    "macro_f1": 0.9439283320419395,
+    "per_class": {
+      "business": {
+        "precision": 0.9315068493150684,
+        "recall": 0.918918918918919,
+        "f1-score": 0.9251700680272109,
+        "support": 148.0
+      },
+      "politics": {
+        "precision": 0.925,
+        "recall": 0.896969696969697,
+        "f1-score": 0.9107692307692308,
+        "support": 165.0
+      },
+      "sports": {
+        "precision": 0.991725768321513,
+        "recall": 1.0,
+        "f1-score": 0.9958456973293769,
+        "support": 839.0
+      },
+      "accuracy": 0.9748263888888888,
+      "macro avg": {
+        "precision": 0.9494108725455271,
+        "recall": 0.9386295386295386,
+        "f1-score": 0.9439283320419395,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.9744322337850517,
+        "recall": 0.9748263888888888,
+        "f1-score": 0.9745804107676194,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        136,
+        12,
+        0
+      ],
+      [
+        10,
+        148,
+        7
+      ],
+      [
+        0,
+        0,
+        839
+      ]
+    ]
+  },
+  "epochs": 3,
+  "max_length": 64,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 0.23717616737505726,
+      "validation_macro_f1": 0.939373169331728
+    },
+    {
+      "epoch": 2,
+      "loss": 0.04166902061741792,
+      "validation_macro_f1": 0.9411223709343851
+    },
+    {
+      "epoch": 3,
+      "loss": 0.010417406620768411,
+      "validation_macro_f1": 0.9302842297758511
+    }
+  ],
+  "device": "cpu",
+  "batch_size": 16,
+  "learning_rate": 2e-05,
+  "seconds": 7313.632937800001,
+  "model": "google-bert/bert-base-uncased",
+  "selection": "best validation macro-F1 across 3 epochs"
+}

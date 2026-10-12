@@ -1,0 +1,160 @@
+{
+  "method": "w2v_nyt",
+  "labels": [
+    "business",
+    "politics",
+    "sports"
+  ],
+  "validation": {
+    "accuracy": 0.9878472222222222,
+    "macro_f1": 0.9698217754247397,
+    "per_class": {
+      "business": {
+        "precision": 0.9590163934426229,
+        "recall": 0.9435483870967742,
+        "f1-score": 0.9512195121951219,
+        "support": 124.0
+      },
+      "politics": {
+        "precision": 0.9605263157894737,
+        "recall": 0.9605263157894737,
+        "f1-score": 0.9605263157894737,
+        "support": 152.0
+      },
+      "sports": {
+        "precision": 0.9965831435079726,
+        "recall": 0.9988584474885844,
+        "f1-score": 0.9977194982896237,
+        "support": 876.0
+      },
+      "accuracy": 0.9878472222222222,
+      "macro avg": {
+        "precision": 0.9720419509133563,
+        "recall": 0.9676443834582775,
+        "f1-score": 0.9698217754247397,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.9877820021700254,
+        "recall": 0.9878472222222222,
+        "f1-score": 0.9878068576509597,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        117,
+        5,
+        2
+      ],
+      [
+        5,
+        146,
+        1
+      ],
+      [
+        0,
+        1,
+        875
+      ]
+    ]
+  },
+  "test": {
+    "accuracy": 0.9895833333333334,
+    "macro_f1": 0.9768500260374311,
+    "per_class": {
+      "business": {
+        "precision": 0.9724137931034482,
+        "recall": 0.9527027027027027,
+        "f1-score": 0.962457337883959,
+        "support": 148.0
+      },
+      "politics": {
+        "precision": 0.9640718562874252,
+        "recall": 0.9757575757575757,
+        "f1-score": 0.9698795180722891,
+        "support": 165.0
+      },
+      "sports": {
+        "precision": 0.9976190476190476,
+        "recall": 0.99880810488677,
+        "f1-score": 0.9982132221560452,
+        "support": 839.0
+      },
+      "accuracy": 0.9895833333333334,
+      "macro avg": {
+        "precision": 0.978034899003307,
+        "recall": 0.9757561277823495,
+        "f1-score": 0.9768500260374311,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.9895759363013164,
+        "recall": 0.9895833333333334,
+        "f1-score": 0.9895613714215935,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        141,
+        6,
+        1
+      ],
+      [
+        3,
+        161,
+        1
+      ],
+      [
+        1,
+        0,
+        838
+      ]
+    ]
+  },
+  "C": 0.1,
+  "validation_trials": [
+    {
+      "C": 0.1,
+      "validation_macro_f1": 0.9698217754247397,
+      "convergence_warning": false
+    },
+    {
+      "C": 1.0,
+      "validation_macro_f1": 0.9600744122690115,
+      "convergence_warning": false
+    },
+    {
+      "C": 10.0,
+      "validation_macro_f1": 0.9504274200008785,
+      "convergence_warning": false
+    }
+  ],
+  "seconds": 138.47795459999998,
+  "corpus_documents": 9215,
+  "embedding_epochs": 5,
+  "sg": 1,
+  "window": 5,
+  "min_count": 2,
+  "workers": 1,
+  "embedding_dimension": 100,
+  "coverage_all": {
+    "token_coverage": 0.9958248790650182,
+    "zero_documents": 0
+  },
+  "coverage_by_split": {
+    "train": {
+      "token_coverage": 0.9967271243063267,
+      "zero_documents": 0
+    },
+    "val": {
+      "token_coverage": 0.992299395184483,
+      "zero_documents": 0
+    },
+    "test": {
+      "token_coverage": 0.9920540754323518,
+      "zero_documents": 0
+    }
+  }
+}

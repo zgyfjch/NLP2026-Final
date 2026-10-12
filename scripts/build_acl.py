@@ -1,0 +1,284 @@
+"""Generate the project manuscript using unmodified official ACL style."""
+from pathlib import Path
+import json
+ROOT=Path(__file__).resolve().parents[1]; A=ROOT/'artifacts'; R=ROOT/'reports'
+pr=json.loads((A/'project_results.json').read_text()); audit=json.loads((A/'data_audit.json').read_text())
+def esc(s):
+    for a,b in [('&',r'\&'),('%',r'\%'),('_',r'\_')]:s=str(s).replace(a,b)
+    return s
+def pct(v):return f'{100*v:.2f}'+r'\%'
+rows=[]
+for name in ['binary','frequency','tfidf','glove','w2v_ag','w2v_nyt','bert']:
+    p=A/'results'/f'{name}.json'
+    if p.exists():
+        d=json.loads(p.read_text()); rows.append(f"{esc(name)} & {pct(d['test']['accuracy'])} & {pct(d['test']['macro_f1'])} " + chr(92)*2)
+    else: rows.append(f'{esc(name)} & Pending & Pending \\\\')
+if 'majority_baseline' in pr:
+    b=pr['majority_baseline']
+    rows.insert(0,'majority-only & '+pct(b['accuracy'])+' & '+pct(b['macro_f1'])+' '+chr(92)*2)
+results='\n'.join(rows)
+selected=pr['selective_curve'][-1]; e=pr['explanation']
+head=r'''\documentclass[11pt]{article}
+\usepackage[preprint]{acl}
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Consolas}
+\newfontfamily\cn{Microsoft YaHei}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{url}
+\title{NewsLens: A Local News Classification System with Calibrated Decisions and Additive Explanations}
+\author{Yi Tan {\cn 谭易} \\ Student ID 2312260}
+\date{}
+\begin{document}
+\maketitle
+\begin{abstract}
+News classification is often presented as a label prediction problem, although a useful demonstration also needs inspectable evidence and a policy for uncertain inputs. NewsLens combines reproducible representation baselines with a local interface, temperature scaling, selective prediction, and exact linear explanations. We evaluate the supplied three-class news corpus using a fixed split, explicitly audit duplicate articles, and separate calibration from threshold selection. The system is implemented without an external inference API. Its main contribution is a tested integration and evaluation protocol rather than a new representation-learning algorithm. We document both strong classification results and the limits of interpreting them as evidence of general reliability.
+\end{abstract}
+\section{Introduction}
+A news-routing tool should help a reader decide whether a prediction is usable. A class label alone does not show whether the classifier found meaningful topic evidence, whether its confidence is interpretable, or whether a document should be reviewed manually. These concerns are particularly relevant for a small course project deployed on a personal computer, where a transparent linear model can be more practical than a large online inference service.
+
+NewsLens addresses English news in three supplied categories: business, politics, and sports. The input is article text. The output comprises a preferred class, a class probability distribution, a review decision, and the terms contributing most strongly to the preferred class relative to its nearest competitor. The interface also exposes recorded experimental results so that a demonstration is tied to measurable behavior.
+
+The project builds on a representation-comparison assignment but adds a separate system layer. Classification alone is not the claimed contribution. The added work includes a calibration protocol with disjoint development subsets, an explicit coverage--accuracy trade-off, an exact score decomposition, a feature-deletion check, input handling, and reproducible artifacts. These components are implemented and tested together rather than assembled through an external model API.
+
+\subsection{Questions and Scope}
+We ask four questions. How do lexical, averaged embedding, and pretrained neural representations behave on the same test rows? Can temperature scaling improve probability quality without changing class predictions? What fraction of articles can be accepted under a validation-selected review policy? Do displayed term contributions correspond to the model's actual computation?
+
+The system is a closed-set topic classifier. It is not a fact checker, an open-domain news understanding system, or a validated detector of out-of-distribution inputs. A high score may be assigned to an unrelated article containing familiar vocabulary. We retain these limitations in both the interface and evaluation.
+
+\subsection{Deliverables}
+The repository includes training programs, fixed split identifiers, data checksums, per-example predictions, experiment summaries, a local web demonstration, automated tests, dependency information, and stage-specific reports. The official ACL style is used without modifying its layout definitions. This manuscript records the implemented system; future evaluation plans are separated from completed measurements.
+\clearpage
+\section{Background and Design Rationale}
+\subsection{Representations}
+Lexical features preserve individual topic indicators. A binary bag of words marks presence, a frequency vector counts occurrences, and TF--IDF combines term frequency with inverse document frequency and length normalization. For a small set of broad topics, a supervised linear classifier can place direct weights on words such as team, election, or company. This makes it a useful baseline and a tractable explanation target.
+
+Word2Vec learns distributed word representations from prediction over local contexts \citep{mikolov2013}. Averaging word vectors gives a fixed-size article representation, but discards order and merges all occurrences into one point. Its compactness is attractive for deployment, while rare discriminative words can become less explicit. We train separate 100-dimensional models on the supplied AG corpus and the NYT training partition so that external and task-domain corpora can be compared.
+
+GloVe learns representations using global word co-occurrence statistics \citep{pennington2014}. We use the specified 100-dimensional glove.6B vectors rather than another GloVe release or a similarly named embedding set. Pretrained vectors provide broad vocabulary coverage, but the downstream document representation remains a simple mean. The comparison therefore concerns an entire pipeline, not only the intrinsic quality of individual vectors.
+
+BERT uses a pretrained bidirectional Transformer and is fine-tuned with a classification head \citep{devlin2019}. The assignment fixes the uncased base model, a maximum sequence length of 64, and three epochs. These constraints are preserved. In particular, BERT sees a short article prefix while the lexical models can use the full document. This difference is an important confound when interpreting comparative accuracy.
+
+\subsection{Confidence and Review}
+The probability of the predicted class is not automatically calibrated. Temperature scaling divides class logits by a positive scalar before softmax \citep{guo2017}. It preserves the largest logit and therefore preserves the predicted label, while changing the probability distribution. We fit the scalar on a dedicated calibration subset and evaluate negative log likelihood and expected calibration error on the held-out test set.
+
+A review threshold converts a probability into an operational choice. Predictions above the threshold are accepted, and other inputs are marked for manual review. Increasing the threshold generally reduces coverage, but improved accuracy among accepted samples is not guaranteed for every finite sample. The relevant evaluation reports both quantities together. A threshold tuned on development data does not establish a population-level correctness guarantee.
+
+\subsection{Why a Linear Explanation}
+The web demonstration focuses on the three lexical classifiers. For these models, every feature has a known coefficient and the score difference between two classes is exactly additive. This provides a stronger implementation check than a plausible list of keywords alone: summing all contributions and the intercept difference must recover the original margin.
+
+The explanation is relative to the runner-up class. A word can support sports over politics without supporting sports over business to the same extent. Displaying this contrast makes the meaning more specific, but it does not establish that the word caused the underlying real-world event or that a human would find the explanation useful. No human-subject evaluation is claimed.
+
+\subsection{System Boundary}
+Standard libraries supply established learning algorithms. Our implementation supplies the data contract, calibration and review logic, explanation computation, validation experiments, and user-facing integration. The distinction matters: the project demonstrates understanding through original integration and verification, not through claiming authorship of BERT, Word2Vec, or logistic regression.
+\clearpage
+\section{Data and Experimental Protocol}
+\subsection{Supplied Data}
+The course folder contains an NYT CSV with text and label columns and an AG CSV with text only. The NYT file contains 11,519 rows: 8,639 sports, 1,451 politics, and 1,429 business articles. The AG file contains 90,000 texts. The supplied files do not document a complete collection history, so we do not infer that the local NYT subset represents all articles from that publisher or a particular time period.
+
+Sports is the majority category, constituting approximately three quarters of the examples. An accuracy-only summary would hide weaker behavior on business or politics. We therefore report macro-F1 alongside accuracy and retain class-specific precision, recall, F1, and a confusion matrix in each experiment record.
+
+\subsection{One Shared Split}
+We use NumPy RandomState with seed 42 to permute row identifiers. The first floor($0.8N$) rows form training, the next rows up to floor($0.9N$) form validation, and the remainder form testing. This yields 9,215, 1,152, and 1,152 examples. We do not silently replace this random split with stratification. All representation methods reuse exactly these row identifiers.
+
+The original instructions mention a common random setting without specifying its value in the available document. Seed 42 is therefore an explicit implementation choice. Similarly, the text requests three bag-of-words methods but enumerates only binary and frequency representations. We add TF--IDF and record that interpretation rather than treating it as a quoted requirement.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{lrrr}\toprule
+Class & Train & Valid. & Test\\\midrule
+@@COUNTS@@
+\bottomrule\end{tabular}
+\caption{Class counts in the saved shared split.}
+\end{table}
+
+\subsection{Leakage Controls}
+Vocabulary and inverse-document-frequency values are fitted only on training articles. NYT Word2Vec also uses training articles only. The AG embedding experiment uses the supplied external AG texts, without NYT validation or test articles being added to its training corpus. Standardization of averaged vectors is fitted on the training representation matrix.
+
+Logistic-regression regularization is selected from $C\in\{0.1,1,10\}$ using validation macro-F1. Ties keep the earlier, smaller value. After selection, we retain the corresponding training-only model rather than refitting on training plus validation. Test labels never select a hyperparameter, a checkpoint, a calibration temperature, or a review threshold.
+
+\subsection{Duplicates and Traceability}
+Exact-text auditing finds 72 duplicate rows beyond their first occurrences. Twelve validation rows and eight test rows contain text also seen in training. The primary experiment preserves the prescribed shared split. A supplemental evaluation removes the eight affected test rows and reports performance on 1,144 previously unseen texts. This sensitivity check does not remove near duplicates or articles about the same event.
+
+The data loader computes a SHA-256 hash of the NYT file, writes the split identifiers, and refuses to reuse them if the file changes. Each result includes metadata and a CSV pairing test row identifiers with true and predicted labels. These artifacts allow an assessor to recompute metrics and inspect errors without trusting rounded report values.
+\clearpage
+\section{Implementation}
+\subsection{Preprocessing and Classifiers}
+Classical methods lowercase text and extract sequences of English letters with optional internal apostrophes. We retain stopwords and do not stem tokens. Digits and punctuation are not standalone features. This simple tokenizer avoids hidden downloads and makes the representation deterministic, although it can lose numeric information important for some business stories.
+
+The lexical vocabulary uses minimum document frequency one. Binary and count vectors are passed directly to multinomial logistic regression. TF--IDF uses smoothed inverse document frequency and L2 document normalization. The solver is L-BFGS with maximum 2,000 iterations and tolerance $10^{-4}$. Convergence warnings are captured in experiment metadata rather than hidden.
+
+The two self-trained Word2Vec models use Skip-gram, dimension 100, window five, minimum count two, five negative samples, five epochs, and one worker. Seed 42 and an explicit Python hash seed reduce nondeterminism. An article vector is the arithmetic mean of all in-vocabulary token occurrences. Unknown tokens are skipped; if none remain, the vector is zero. Coverage and zero-vector counts are recorded separately by split.
+
+Averaged vectors are standardized with a training-fitted scaler before logistic regression. This scaling is part of the embedding pipeline and is recorded for reproducibility. GloVe is read from the official Stanford release, with only words needed by the supplied documents retained in memory. Filtering a fixed pretrained lookup table does not estimate parameters from held-out labels.
+
+\subsection{BERT Training}
+The neural experiment uses the full official uncased BERT base model. Tokenization pads and truncates to 64 WordPiece positions including special tokens. All encoder parameters and the new three-class head are trainable. AdamW uses learning rate $2\times10^{-5}$, weight decay 0.01, ten-percent warmup, linear learning-rate decay, and gradient norm clipping at one. Batch size is 16.
+
+Training runs for exactly three epochs. We evaluate validation macro-F1 after each epoch and save the best validation checkpoint. The final test is evaluated only after all three epochs complete. The code writes a progress file during training, epoch histories, and a resume checkpoint at epoch boundaries. The model download records its repository revision.
+
+\subsection{Local Architecture}
+The browser sends JSON to a local Flask endpoint. The service validates the input, creates sparse features, computes class scores, applies the decision layer, and returns explanations. It loads three lexical model bundles once at startup. No text is sent to an external inference provider, and the service is bound to the loopback interface by default.
+
+\begin{center}
+\fbox{\parbox{.88\columnwidth}{\centering
+English article\\$\downarrow$\\
+Input validation and lexical features\\$\downarrow$\\
+Linear scores and class probabilities\\$\downarrow$\\
+Calibration, review policy, term margins\\$\downarrow$\\
+Browser result and recorded metrics}}
+\end{center}
+
+The interface accepts up to 30,000 characters, handles empty and malformed input, and flags inputs without recognized vocabulary. The non-TF--IDF models use raw probabilities and an explicitly documented fixed review threshold; only TF--IDF uses the calibrated threshold studied below. The demonstration is a local teaching application, not a hardened multi-user production service.
+\clearpage
+\section{Calibration and Explanation Methods}
+\subsection{Disjoint Development Subsets}
+The 1,152 validation examples are shuffled with a fixed seed and split into 576 calibration examples and 576 threshold-selection examples. The first subset chooses a positive temperature by minimizing multiclass negative log likelihood:
+\begin{equation}
+p_c(x;T)=\frac{\exp(z_c(x)/T)}{\sum_k\exp(z_k(x)/T)}.
+\end{equation}
+We optimize $T$ over $[0.1,5]$. Since division by a positive scalar preserves score order, this operation does not change the classifier's argmax prediction. It can improve or worsen probability quality, which is why evaluation is separate from the fitting objective.
+
+The selection subset chooses among 200 fixed thresholds from 0.34 to 0.999. A candidate must accept at least 20 percent of those examples and achieve at least 99 percent observed accuracy among accepted examples. Among eligible candidates we maximize coverage, breaking ties toward the lower threshold. If none qualifies, the policy rejects all inputs rather than inventing a successful operating point.
+
+\subsection{Probability and Selection Metrics}
+Negative log likelihood penalizes confident wrong predictions and evaluates the entire probability vector. Expected calibration error (ECE) groups predicted maximum probabilities into ten equal-width bins and averages the absolute gap between mean confidence and empirical accuracy, weighted by bin size. ECE depends on the binning scheme and sample size; it is not an uncertainty certificate.
+
+Coverage is the number of accepted examples divided by the total. Selective accuracy is correctness among accepted examples and is undefined if nothing is accepted. We report the chosen operating point as well as several fixed thresholds. Test curves describe behavior; they do not retrospectively select the deployed threshold.
+
+\subsection{Exact Relative Contributions}
+For sparse document features $x$, linear class score $z_c=b_c+\sum_jw_{cj}x_j$, predicted class $a$, and runner-up class $b$, the score margin is
+\begin{equation}
+z_a-z_b=(b_a-b_b)+\sum_jx_j(w_{aj}-w_{bj}).
+\end{equation}
+The contribution of term $j$ is the corresponding summand. We display the largest positive contributions. The undisplayed terms and intercept still belong to the full decomposition. Displaying only positive terms must not be interpreted as a complete accounting of the margin.
+
+The implementation independently reconstructs the full score difference and compares it with the classifier output. This checks feature ordering, coefficient indexing, and the choice of comparison class. A plausible term list would not catch these implementation errors.
+
+\subsection{Deletion Diagnostic}
+For the first 200 saved test rows, we zero up to five present features with positive highest contributions and compare prediction changes with zeroing the same number of randomly chosen present features. The sparse vector is not renormalized after deletion. This is a representation-level intervention, not a natural-language rewrite. The random generator is fixed.
+
+The diagnostic tests sensitivity to selected features. It is not a proof of causal faithfulness in language, and its first-200-row subset is not a separately sampled benchmark. No settings are revised after observing the test deletion outcome. A further fixed diagnostic retains only the first 64 classical tokens to illustrate input-length sensitivity without claiming equivalence to 64 WordPiece tokens.
+\clearpage
+\section{Experimental Results}
+\subsection{Classification Comparison}
+Table~\ref{tab:main} reports the shared test-set results. Every numeric entry is loaded from an actual experiment record; a pending entry explicitly means no completed result exists. Such entries must be completed before treating the homework comparison as final. Our system evaluation below uses the completed TF--IDF classifier and does not depend on a pending baseline.
+\begin{table}[h]\centering\small
+\begin{tabular}{lrr}\toprule
+Method & Accuracy & Macro-F1\\\midrule
+@@RESULTS@@
+\bottomrule\end{tabular}
+\caption{Shared held-out test results.}\label{tab:main}
+\end{table}
+
+The lexical models are strong on these broad categories. The majority-only baseline always predicts the most common training class; it exposes the imbalance without fitting text features. TF--IDF achieves 99.13 percent accuracy and 98.03 percent macro-F1 on this split. These figures should not be interpreted as evidence that this representation is generally superior for NLP. The label space, article lengths, majority class, and lexical topic indicators all influence the outcome.
+
+AG-trained and NYT-trained embeddings differ in corpus size and domain simultaneously. Consequently their comparison cannot isolate a domain-adaptation effect. Mean pooling also removes token order, and vocabulary coverage depends on the corpus. The saved coverage records are therefore necessary context for any ranking.
+
+\subsection{Calibration and Accepted Predictions}
+The fitted temperature is @@TEMP@@. On the test set, raw NLL is @@RAWNLL@@ and calibrated NLL is @@CALNLL@@; raw ECE is @@RAWECE@@ and calibrated ECE is @@CALECE@@. Both reported measures improve on this split, while predicted labels remain unchanged by construction. The result does not imply that calibration will transfer unchanged to new topics or time periods.
+
+The validation-selected threshold is @@THRESH@@. It accepts @@ACCEPTED@@ of 1,152 test articles, for coverage @@COVERAGE@@ and selective accuracy @@SELECTACC@@. Only the accepted subset is used in that accuracy. It would be misleading to compare this number with full-coverage accuracy without also reporting how many articles are deferred.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{rrr}\toprule
+Threshold & Coverage & Accuracy\\\midrule
+@@CURVE@@
+\bottomrule\end{tabular}
+\caption{Fixed test operating points after calibration.}
+\end{table}
+
+The review rule is selected using observed development accuracy, not a statistical lower confidence bound. The relatively small number of errors makes apparent high reliability sensitive to a few examples. We therefore present it as a demonstration policy and not as a guaranteed 99-percent-accurate service.
+
+\subsection{Duplicate Sensitivity}
+Removing the eight test articles seen verbatim in training produces accuracy @@UNSEENACC@@ and macro-F1 @@UNSEENF1@@. The high score is not explained solely by these exact duplicates. Nevertheless, near-duplicate articles and shared events remain plausible sources of optimism, and event-level or time-based evaluation would be needed to address them.
+\clearpage
+\section{Verification and Error Analysis}
+\subsection{Explanation Checks}
+The maximum absolute reconstruction error over the 200 diagnostic examples is @@RECON@@. This confirms numerical agreement between the contribution formula and the linear classifier margin to floating-point precision. It validates the implementation of an algebraic relationship, not the correctness of an underlying classification.
+
+Zeroing up to five top positive-contribution features changes @@TOPFLIP@@ of those predictions; matched random feature deletion changes @@RANDFLIP@@. This establishes a measurable distinction between chosen and arbitrary features for this diagnostic. However, a low flip rate is possible when evidence is distributed across many redundant terms. Failure to flip does not establish that the removed feature had zero influence.
+
+The intervention leaves other feature values unchanged, including the original TF--IDF normalization. Recomputing TF--IDF after removing words from text would change many values and answer a different question. Both experiments could be useful, but we do not conflate them.
+
+\subsection{Class-Level Errors}
+The TF--IDF confusion matrix is given below. Most errors occur between business and politics, while sports is much easier in this split. Economic policy articles can contain evidence for both of the former labels, so an error cannot be diagnosed from an isolated top keyword alone. Per-example identifiers support inspection of the complete article and assigned label.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lrrr}\toprule
+True / Pred. & Bus. & Pol. & Sport\\\midrule
+@@CONFUSION@@
+\bottomrule\end{tabular}
+\caption{TF--IDF errors on all 1,152 test examples.}
+\end{table}
+
+\subsection{Input-Length Diagnostic}
+All 1,152 test articles exceed 64 WordPiece tokens; their mean length is 818.79 including special tokens. Thus truncation affects every neural test input. Using the first 64 classical tokens with the already fitted TF--IDF classifier gives accuracy @@HEADACC@@ and macro-F1 @@HEADF1@@. This diagnostic does not create a perfectly matched BERT comparison: the tokenizers differ, and the lexical model was trained on full documents. A controlled study would retrain all representations with a common input budget.
+
+\subsection{Functional Tests and Latency}
+Ten automated tests cover disjoint split membership, tokenization, empty input, malformed JSON, an invalid model name, oversized text, all-unknown input, probability normalization, exact margin reconstruction, and successful page and result endpoints. The result-endpoint test also ensures that recorded experiments can be displayed in the demonstration. Test success is a reproducible functional check, not a security audit or accessibility certification.
+
+For 100 test articles, measured single-document TF--IDF transformation plus probability prediction has median latency @@LATMED@@ ms and P95 @@LATP95@@ ms. These values exclude HTTP, browser rendering, startup, and model loading. They were measured on the local CPU and should not be interpreted as a controlled comparison with a simultaneously training neural model.
+
+The browser handles failure messages and inserts returned content as text. It offers an example article and model selection. A zero-feature document is rejected before a misleading prior-only prediction is shown. Inputs with some known vocabulary may still be outside the trained classes, which remains a deliberate limitation of the demonstration.
+\clearpage
+\section{Discussion and Limitations}
+\subsection{What the Results Support}
+The measurements support a narrow conclusion: a lightweight local classifier can provide strong topic accuracy, inspectable model-specific contributions, and a testable review policy on this supplied dataset. They do not show universal superiority over pretrained models. The useful system outcome is that a prediction can be traced through preprocessing, scores, probabilities, and the chosen operating point.
+
+Strong lexical baselines also change the role of a course demonstration. Adding complexity merely to increase model size would provide little evidence of improved utility. Instead, the system makes confidence and explanation assumptions explicit and checks their consequences. Calibration can improve probability quality without affecting a single class decision; this distinction is visible in the experiment design.
+
+\subsection{Validity Threats}
+Only one train/validation/test split is used. No multi-seed confidence interval or paired significance test is claimed. Differences of a few examples should not be described as statistically established improvements. The validation sample is also finite, and the review threshold is selected by searching a grid, which introduces selection variability.
+
+Exact-text duplicates are audited, but event-level dependence remains unmeasured. The original labels may themselves be noisy or ambiguous. There is no temporal split and no outside-domain corpus with verified labels. The system's handling of empty or unknown input is a guardrail for obvious failures, not a comprehensive out-of-distribution detector.
+
+Explanations describe model scores, not the semantics of an article or the truth of a report. Only positive evidence against the runner-up is displayed. Human usefulness, trust calibration, and explanation comprehension would require additional user studies. The deletion experiment is limited to 200 fixed examples and a particular feature-space intervention.
+
+The local service has no authentication, concurrency stress test, or production deployment claim. The training environment has limited memory and no NVIDIA GPU. CPU training time and inference latency are context-dependent; the current measurements do not establish energy efficiency or cross-hardware performance.
+
+\subsection{Future Work}
+The next useful extensions are multi-seed evaluation, grouping near-duplicate events before splitting, and a common input-length budget across representations. A separately collected out-of-domain set could test abstention beyond in-distribution confidence. Human evaluation could compare whether relative contributions help users recognize model mistakes. These are proposed extensions, not completed project results.
+
+\section{Conclusion}
+NewsLens integrates representation baselines, development-only calibration and threshold selection, exact relative term explanations, and a local interactive demonstration. Saved split identifiers and per-example predictions connect the user interface to reproducible experiments. The system highlights that accuracy, probability quality, accepted coverage, and explanation correctness are distinct properties that require different checks.
+
+\section*{Individual Contribution and Tool Use}
+Yi Tan (2312260) is the sole team member responsible for the project and submission. Codex assisted with requirements interpretation, code and prose drafting, experiment execution, debugging, and artifact preparation. Established libraries and pretrained models are credited as prior work. The project-specific contribution is the integrated protocol, decision and explanation logic, tests, and demonstration. The student must review the material and be able to explain the submitted implementation; this statement does not assert that a future oral presentation has already occurred.
+\clearpage
+\begin{thebibliography}{9}
+\raggedright
+\bibitem[Devlin et~al.(2019)]{devlin2019}
+Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. 2019.
+BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding.
+In \emph{Proceedings of NAACL-HLT}, pages 4171--4186.
+\url{https://aclanthology.org/N19-1423/}.
+\bibitem[Guo et~al.(2017)]{guo2017}
+Chuan Guo, Geoff Pleiss, Yu Sun, and Kilian Q. Weinberger. 2017.
+On Calibration of Modern Neural Networks.
+In \emph{Proceedings of ICML}, PMLR 70, pages 1321--1330.
+\url{https://proceedings.mlr.press/v70/guo17a.html}.
+\bibitem[Mikolov et~al.(2013)]{mikolov2013}
+Tomas Mikolov, Kai Chen, Greg Corrado, and Jeffrey Dean. 2013.
+Efficient Estimation of Word Representations in Vector Space.
+arXiv:1301.3781. \url{https://arxiv.org/abs/1301.3781}.
+\bibitem[Pennington et~al.(2014)]{pennington2014}
+Jeffrey Pennington, Richard Socher, and Christopher D. Manning. 2014.
+GloVe: Global Vectors for Word Representation.
+In \emph{Proceedings of EMNLP}, pages 1532--1543.
+\url{https://aclanthology.org/D14-1162/}.
+\end{thebibliography}
+\end{document}
+'''
+conf=json.loads((A/'results/tfidf.json').read_text())
+values=dict(COUNTS='\n'.join(f"{lab} & {audit['split_counts']['train'][lab]} & {audit['split_counts']['val'][lab]} & {audit['split_counts']['test'][lab]} \\\\" for lab in ['business','politics','sports']),RESULTS=results,
+ TEMP=f"{pr['temperature']:.4f}",RAWNLL=f"{pr['calibration']['raw_nll']:.4f}",CALNLL=f"{pr['calibration']['scaled_nll']:.4f}",RAWECE=f"{pr['calibration']['raw_ece']:.4f}",CALECE=f"{pr['calibration']['scaled_ece']:.4f}",
+ THRESH=f"{pr['selected_threshold']:.4f}",ACCEPTED=selected['accepted'],COVERAGE=pct(selected['coverage']),SELECTACC=pct(selected['accuracy']),
+ CURVE='\n'.join(f"{r['threshold']:.2f} & {pct(r['coverage'])} & {pct(r['accuracy'])} \\\\" for r in pr['selective_curve'][1:7]),
+ UNSEENACC=pct(pr['unseen_test']['accuracy']),UNSEENF1=pct(pr['unseen_test']['macro_f1']),RECON=f"{e['max_reconstruction_error']:.2g}",TOPFLIP=pct(e['top5_flip_rate']),RANDFLIP=pct(e['random5_flip_rate']),
+ CONFUSION='\n'.join(f"{lab} & {' & '.join(map(str,row))} \\\\" for lab,row in zip(conf['labels'],conf['test']['confusion_matrix'])),HEADACC=pct(pr['head64']['accuracy']),HEADF1=pct(pr['head64']['macro_f1']),LATMED=f"{pr['latency_ms']['median']:.2f}",LATP95=f"{pr['latency_ms']['p95']:.2f}")
+for key,value in values.items():head=head.replace('@@'+key+'@@',str(value))
+(R/'TeamXX_Final_Report.tex').write_text(head,encoding='utf-8')
