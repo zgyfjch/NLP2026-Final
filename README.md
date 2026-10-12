@@ -1,6 +1,8 @@
-# NLP 2026 作业一与 NewsLens 大作业
+# NLP 2026 Final Project — NewsLens
 
-GitHub: https://github.com/zgyfjch/NLP2026-2312260-NewsLens
+GitHub: https://github.com/zgyfjch/NLP2026-Final
+
+作业一已单独提交至 https://github.com/zgyfjch/NLP2026-HW1 。本仓库保留共用的分类实验和课程数据，作为大作业的可复现基线。
 
 **学生：2312260 谭易；独立成组；大作业 Track B Demonstration。**
 
@@ -15,7 +17,7 @@ NewsLens 是在本机运行的英文新闻分类与解释系统。作业一提�
 - `artifacts/split.json`：数据 SHA-256、种子与全部划分行号。
 - `artifacts/results/`：模型结果 JSON、逐测试样本预测 CSV。
 - `artifacts/models/`：本地模型；通常不进入源码版本库。
-- `reports/HW1_2312260_TanYi.pdf`：作业一实验报告。
+- 作业一实验报告见独立仓库 `NLP2026-HW1`。
 - `reports/TeamXX_Final_Report.tex`：大作业 ACL 官方模板论文源码。
 - `NLP2026_TeamXX_Demo/`：分阶段项目 PDF。
 - `scripts/`：下载、报告生成、检查与打包工具。

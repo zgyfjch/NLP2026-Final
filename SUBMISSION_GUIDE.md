@@ -2,7 +2,9 @@
 
 学生：2312260 谭易。独立成组，Track B，主题 NewsLens 可解释新闻分类系统。
 
-GitHub 仓库：https://github.com/zgyfjch/NLP2026-2312260-NewsLens
+大作业 GitHub 仓库：https://github.com/zgyfjch/NLP2026-Final
+
+作业一 GitHub 仓库：https://github.com/zgyfjch/NLP2026-HW1
 
 ## 作业一
 
